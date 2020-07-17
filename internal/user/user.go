@@ -26,6 +26,23 @@ type Account struct {
 	CreatedOn string `json:"created_on,omitempty"`
 }
 
+type Service interface {
+	Register(username string, email string, password string) *errors.Rest
+	Login(email string, password string) (string, *errors.Rest)
+	Search(id string) (*Account, *errors.Rest)
+	Delete(id string) *errors.Rest
+	FindAll() ([]Account, *errors.Rest)
+}
+
+type Repository interface {
+	Find(id string) (*Account, *errors.Rest)
+	Save(account *Account) *errors.Rest
+	Update(account *Account) *errors.Rest
+	Delete(id string) *errors.Rest
+	FindByEmail(email string) (*Account, *errors.Rest)
+	FindAll() ([]Account, *errors.Rest)
+}
+
 func New(id string, username string, email string, password string) (*Account, *errors.Rest) {
 	a := Account{
 		Id:       id,
