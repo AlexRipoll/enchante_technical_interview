@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	queryFindById    = "SELECT id, username, email, password FROM users WHERE id=?;"
+	queryFindById    = "SELECT id, username, email, password, role FROM users WHERE id=?;"
 	querySave        = "INSERT INTO users (id, username, email, password, role, created_on) VALUES (?, ?, ?, ?, ?, ?);"
 	queryDelete      = "DELETE FROM users WHERE id=?;"
 	queryFindAll     = "SELECT id, username, email, password, role, created_on FROM users;"
