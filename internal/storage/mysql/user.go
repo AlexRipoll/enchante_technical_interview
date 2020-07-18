@@ -56,20 +56,6 @@ func (r *repository) Save(account *user.Account) *errors.Rest {
 	return nil
 }
 
-func (r *repository) Update(account *user.Account) *errors.Rest {
-	stmt, stmtErr := r.connection.Prepare(queryUpdate)
-	if stmtErr != nil {
-		return errors.NewInternalServerError("database error")
-	}
-	defer stmt.Close()
-
-	_, err := stmt.Exec(account.Username, account.Email, account.Password, account.UpdatedOn, account.Id)
-	if err != nil {
-		return errors.NewInternalServerError("error when trying to update account")
-	}
-	return nil
-}
-
 func (r *repository) Delete(id string) *errors.Rest {
 	stmt, stmtErr := r.connection.Prepare(queryDelete)
 	if stmtErr != nil {
@@ -100,7 +86,7 @@ func (r *repository) FindAll() ([]user.Account, *errors.Rest) {
 	accounts := make([]user.Account, 0)
 	for rows.Next() {
 		var a user.Account
-		scanErr := rows.Scan(&a.Id, &a.Username, &a.Email, &a.Password, &a.Role, &a.CreatedOn, &a.UpdatedOn)
+		scanErr := rows.Scan(&a.Id, &a.Username, &a.Email, &a.Password, &a.Role, &a.CreatedOn)
 		if scanErr != nil {
 			return nil, errors.NewNotFoundError(fmt.Sprintf("failed to scan row"))
 		}

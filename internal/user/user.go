@@ -37,7 +37,6 @@ type Service interface {
 type Repository interface {
 	Find(id string) (*Account, *errors.Rest)
 	Save(account *Account) *errors.Rest
-	Update(account *Account) *errors.Rest
 	Delete(id string) *errors.Rest
 	FindByEmail(email string) (*Account, *errors.Rest)
 	FindAll() ([]Account, *errors.Rest)

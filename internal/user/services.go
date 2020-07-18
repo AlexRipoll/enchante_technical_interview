@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
+	"github.com/AlexRipoll/enchante_technical_interview/pkg/time"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/uuidv4"
-	"github.com/AlexRipoll/market/pkg/time"
 	"net/http"
 )
 
