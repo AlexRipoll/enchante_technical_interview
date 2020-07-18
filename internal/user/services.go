@@ -93,8 +93,11 @@ func (s *service) RegisterUser(username string, email string, password string, r
 
 
 func (s *service) Search(id string) (*Account, *errors.Rest) {
-	// TODO implementation
-	return nil, nil
+	account, err := s.repository.Find(id)
+	if err != nil {
+		return nil, err
+	}
+	return account, nil
 }
 
 func (s *service) Delete(id string) *errors.Rest {

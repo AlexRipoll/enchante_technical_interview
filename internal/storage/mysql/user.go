@@ -32,7 +32,7 @@ func (r *repository) Find(id string) (*user.Account, *errors.Rest) {
 
 	row := stmt.QueryRow(id)
 	var a user.Account
-	scanErr := row.Scan(&a.Id, &a.Username, &a.Email, &a.Password)
+	scanErr := row.Scan(&a.Id, &a.Username, &a.Email, &a.Password, &a.Role)
 	if scanErr != nil {
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no account found with id %s", id))
 	}

@@ -34,6 +34,22 @@ func NewInternalServerError(message string) *Rest {
 	}
 }
 
+func NewForbiddenAccessError(message string) *Rest {
+	return &Rest{
+		Message: message,
+		Status:  http.StatusForbidden,
+		Error:   "forbidden_access_error",
+	}
+}
+
+func NewUnauthorizedError(message string) *Rest {
+	return &Rest{
+		Message: message,
+		Status:  http.StatusUnauthorized,
+		Error:   "unauthorized_error",
+	}
+}
+
 func NewError(status int, message string) *Rest {
 	return &Rest{
 		Message: message,

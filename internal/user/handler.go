@@ -2,8 +2,10 @@ package user
 
 import (
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
+	"github.com/AlexRipoll/enchante_technical_interview/pkg/uuidv4"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 type handler struct {
@@ -55,6 +57,22 @@ func (h *handler) Login(c *gin.Context) {
 }
 
 func (h *handler) RegisterUser(c *gin.Context) {
+	id, ok := c.Get("id")
+	if !ok {
+		apiErr := errors.NewUnauthorizedError("missing claim")
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+	account, err := h.service.Search(id.(string))
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	if account.Role != "admin" {
+		apiErr := errors.NewForbiddenAccessError("forbidden access")
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
 	var a Account
 	if err := c.ShouldBindJSON(&a); err != nil {
 		apiErr := errors.NewBadRequestError("invalid json body")
@@ -69,7 +87,19 @@ func (h *handler) RegisterUser(c *gin.Context) {
 }
 
 func (h *handler) Search(c *gin.Context) {
-	// TODO implementation
+	id := strings.TrimSpace(c.Param("id"))
+	if err := uuidv4.NewService().Validate(id); err != nil {
+		apiErr := errors.NewBadRequestError(err.Error())
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	u, serviceErr := h.service.Search(id)
+	if serviceErr != nil {
+		c.JSON(serviceErr.Status, serviceErr)
+		return
+	}
+	c.JSON(http.StatusOK, u)
 }
 
 func (h *handler) Delete(c *gin.Context) {
