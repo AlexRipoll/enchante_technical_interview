@@ -111,8 +111,3 @@ func (s *service) Delete(id string) *errors.Rest {
 	}
 	return nil
 }
-
-func (s *service) FindAll() ([]Account, *errors.Rest) {
-	// TODO implementation
-	return nil, nil
-}

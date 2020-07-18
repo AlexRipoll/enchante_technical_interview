@@ -32,7 +32,6 @@ type Service interface {
 	Login(email string, password string) (string, *errors.Rest)
 	Search(id string) (*Account, *errors.Rest)
 	Delete(id string) *errors.Rest
-	FindAll() ([]Account, *errors.Rest)
 }
 
 type Repository interface {
@@ -40,7 +39,6 @@ type Repository interface {
 	Save(account *Account) *errors.Rest
 	Delete(id string) *errors.Rest
 	FindByEmail(email string) (*Account, *errors.Rest)
-	FindAll() ([]Account, *errors.Rest)
 }
 
 func New(id string, username string, email string, password string) (*Account, *errors.Rest) {

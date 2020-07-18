@@ -18,7 +18,6 @@ type Handler interface {
 	Login(c *gin.Context)
 	Search(c *gin.Context)
 	Delete(c *gin.Context)
-	FindAll(c *gin.Context)
 }
 
 func NewHandler(service Service) Handler {
@@ -102,11 +101,6 @@ func (h *handler) Delete(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
-
-func (h *handler) FindAll(c *gin.Context) {
-	// TODO implementation
-}
-
 
 func (h *handler) checkAccessRights(c *gin.Context) {
 	id, ok := c.Get("id")

@@ -71,31 +71,6 @@ func (r *repository) Delete(id string) *errors.Rest {
 	return nil
 }
 
-func (r *repository) FindAll() ([]user.Account, *errors.Rest) {
-	stmt, stmtErr := r.connection.Prepare(queryFindAll)
-	if stmtErr != nil {
-		return nil, errors.NewInternalServerError("database error")
-	}
-	defer stmt.Close()
-
-	rows, queryErr := stmt.Query()
-	if queryErr != nil {
-		return nil, errors.NewInternalServerError("database error")
-	}
-
-	accounts := make([]user.Account, 0)
-	for rows.Next() {
-		var a user.Account
-		scanErr := rows.Scan(&a.Id, &a.Username, &a.Email, &a.Password, &a.Role, &a.CreatedOn)
-		if scanErr != nil {
-			return nil, errors.NewNotFoundError(fmt.Sprintf("failed to scan row"))
-		}
-		accounts = append(accounts, a)
-	}
-
-	return accounts, nil
-}
-
 func (r *repository) FindByEmail(email string) (*user.Account, *errors.Rest) {
 	stmt, stmtErr := r.connection.Prepare(queryFindByEmail)
 	if stmtErr != nil {
