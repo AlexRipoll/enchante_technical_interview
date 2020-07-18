@@ -1,7 +1,9 @@
 package user
 
 import (
+	"github.com/AlexRipoll/enchante_technical_interview/pkg/crypto"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
+	"github.com/AlexRipoll/enchante_technical_interview/pkg/jwt"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/time"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/uuidv4"
 	"net/http"
@@ -42,8 +44,24 @@ func (s *service) Register(username string, email string, password string) *erro
 }
 
 func (s *service) Login(email, password string) (string, *errors.Rest) {
-	// TODO implementation
-	return "", nil
+	account, err := ValidateCredentials(email, password)
+	if err != nil {
+		return "", err
+	}
+
+	account, err = s.repository.FindByEmail(account.Email)
+	if err != nil {
+		return "", errors.NewNotFoundError("no user found with the given credentials")
+	}
+	if err := crypto.Bcrypt().CheckHash(password, account.Password); err != nil {
+		return "", errors.NewNotFoundError("no user found with the given credentials")
+	}
+
+	token, tokenErr := jwt.NewService("secret-Key", 3600).GenerateToken(account.Id)
+	if tokenErr != nil {
+		return "", errors.NewInternalServerError("something went wrong")
+	}
+	return token, nil
 }
 
 func (s *service) Search(id string) (*Account, *errors.Rest) {

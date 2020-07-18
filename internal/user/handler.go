@@ -38,7 +38,19 @@ func (h *handler) Register(c *gin.Context) {
 }
 
 func (h *handler) Login(c *gin.Context) {
-	// TODO implementation
+	var account Account
+	if err := c.ShouldBindJSON(&account); err != nil {
+		apiErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	jwt, err := h.service.Login(account.Email, account.Password)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusCreated, map[string]string{"token": jwt})
 }
 
 func (h *handler) Search(c *gin.Context) {

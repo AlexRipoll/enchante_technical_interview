@@ -69,6 +69,20 @@ func New(id string, username string, email string, password string) (*Account, *
 	return &a, nil
 }
 
+func ValidateCredentials(email, password string) (*Account, *errors.Rest) {
+	a := Account{
+		Email:    email,
+		Password: password,
+	}
+	if err := a.validateEmail(); err != nil {
+		return nil, err
+	}
+	if err := a.validatePassword(); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
 func (a *Account) validateUsername() *errors.Rest {
 	if err := uuidv4.NewService().Validate(a.Id); err != nil {
 		return errors.NewInternalServerError(err.Error())
