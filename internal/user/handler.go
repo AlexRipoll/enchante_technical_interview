@@ -12,6 +12,7 @@ type handler struct {
 
 type Handler interface {
 	Register(c *gin.Context)
+	RegisterUser(c *gin.Context)
 	Login(c *gin.Context)
 	Search(c *gin.Context)
 	Delete(c *gin.Context)
@@ -51,6 +52,20 @@ func (h *handler) Login(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, map[string]string{"token": jwt})
+}
+
+func (h *handler) RegisterUser(c *gin.Context) {
+	var a Account
+	if err := c.ShouldBindJSON(&a); err != nil {
+		apiErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(apiErr.Status, apiErr.Message)
+		return
+	}
+	if serviceErr := h.service.RegisterUser(a.Username, a.Email, a.Password, a.Role); serviceErr != nil {
+		c.JSON(serviceErr.Status, serviceErr)
+		return
+	}
+	c.JSON(http.StatusCreated, map[string]string{"status": "created"})
 }
 
 func (h *handler) Search(c *gin.Context) {

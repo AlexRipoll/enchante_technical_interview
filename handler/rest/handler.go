@@ -16,6 +16,8 @@ func Handler() {
 	router.POST("/users", userHandler.Register)
 	router.POST("/login", userHandler.Login)
 
+	router.POST("/admin/users", userHandler.RegisterUser)
+
 
 	if err := router.Run(":9000"); err != nil {
 		panic(err)

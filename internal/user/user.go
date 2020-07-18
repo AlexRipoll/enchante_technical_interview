@@ -28,6 +28,7 @@ type Account struct {
 
 type Service interface {
 	Register(username string, email string, password string) *errors.Rest
+	RegisterUser(username string, email string, password string, role string) *errors.Rest
 	Login(email string, password string) (string, *errors.Rest)
 	Search(id string) (*Account, *errors.Rest)
 	Delete(id string) *errors.Rest
@@ -58,6 +59,9 @@ func New(id string, username string, email string, password string) (*Account, *
 		return nil, err
 	}
 	if err := a.validatePassword(); err != nil {
+		return nil, err
+	}
+	if err := a.validateRole(); err != nil {
 		return nil, err
 	}
 	var hashErr error
@@ -118,4 +122,25 @@ func (a *Account) validatePassword() *errors.Rest {
 			"password must contain at least %d characters", minPasswordLength))
 	}
 	return nil
+}
+
+func (a *Account) SetRole(role string) *errors.Rest {
+	a.Role = role
+	if err := a.validateRole(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Account) validateRole() *errors.Rest {
+	for _, v := range allowedRoles() {
+		if a.Role == v {
+			return nil
+		}
+	}
+	return errors.NewBadRequestError("invalid user role")
+}
+
+func allowedRoles() []string {
+	return []string{"user", "seller", "admin"}
 }

@@ -64,6 +64,34 @@ func (s *service) Login(email, password string) (string, *errors.Rest) {
 	return token, nil
 }
 
+func (s *service) RegisterUser(username string, email string, password string, role string) *errors.Rest {
+	id, err := uuidv4.NewService().Generate()
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+
+	account, accountErr := New(id, username, email, password)
+	if accountErr != nil {
+		return accountErr
+	}
+	account.SetRole(role)
+	account.CreatedOn = time.Current()
+
+	searchResult, searchErr := s.repository.FindByEmail(email)
+	if searchErr != nil && searchErr.Status != http.StatusNotFound {
+		return searchErr
+	}
+	if searchResult != nil {
+		return errors.NewBadRequestError("email is already registered")
+	}
+
+	if dbErr := s.repository.Save(account); dbErr != nil {
+		return dbErr
+	}
+	return nil
+}
+
+
 func (s *service) Search(id string) (*Account, *errors.Rest) {
 	// TODO implementation
 	return nil, nil
