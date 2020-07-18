@@ -101,7 +101,14 @@ func (s *service) Search(id string) (*Account, *errors.Rest) {
 }
 
 func (s *service) Delete(id string) *errors.Rest {
-	// TODO implementation
+	_, err := s.Search(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repository.Delete(id); err != nil {
+		return err
+	}
 	return nil
 }
 

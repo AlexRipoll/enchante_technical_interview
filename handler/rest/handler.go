@@ -17,6 +17,7 @@ func Handler() {
 	auth := router.Group("/", middleware.Authenticate())
 
 	auth.POST("/admin/users", userHandler.RegisterUser)
+	auth.DELETE("/admin/users/:id", userHandler.Delete)
 
 	router.POST("/login", userHandler.Login)
 	router.POST("/users", userHandler.Register)
