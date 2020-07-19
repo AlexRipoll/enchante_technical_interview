@@ -25,7 +25,7 @@ type Service interface {
 	Find(id string) (*Product, *errors.Rest)
 	Add(name string, price float64,  sellerId string) *errors.Rest
 	Update(id string, name string, price float64,  sellerId string) *errors.Rest
-	Delete(id string,  sellerId string) *errors.Rest
+	Delete(id string) *errors.Rest
 	FindAll() ([]Product, *errors.Rest)
 }
 

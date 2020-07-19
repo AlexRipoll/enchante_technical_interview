@@ -61,7 +61,15 @@ func (s *service) Update(id string, name string, price float64,  sellerId string
 	return nil
 }
 
-func (s *service) Delete(id string,  sellerId string) *errors.Rest {
+func (s *service) Delete(id string) *errors.Rest {
+	_, err := s.Find(id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repository.Delete(id); err != nil {
+		return err
+	}
 	return nil
 }
 

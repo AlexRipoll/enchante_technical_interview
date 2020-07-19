@@ -29,6 +29,7 @@ func Handler() {
 	auth.POST("/users/:id/products", productHandler.Add)
 	auth.GET("/users/:id/products/:product_id", productHandler.Search)
 	auth.PUT("/users/:id/products/:product_id", productHandler.Update)
+	auth.DELETE("/users/:id/products/:product_id", productHandler.Delete)
 
 	if err := router.Run(":9000"); err != nil {
 		panic(err)

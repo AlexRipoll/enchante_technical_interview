@@ -86,6 +86,19 @@ func (h *handler) Update(c *gin.Context) {
 }
 
 func (h *handler) Delete(c *gin.Context) {
+	h.checkAccessRights(c)
+	id := strings.TrimSpace(c.Param("product_id"))
+	if err := uuidv4.NewService().Validate(id); err != nil {
+		apiErr := errors.NewBadRequestError(err.Error())
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	if err := h.service.Delete(id); err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
 
 func (h *handler) checkAccessRights(c *gin.Context) {

@@ -71,6 +71,17 @@ func (r *productRepository) Update(p *product.Product) *errors.Rest {
 }
 
 func (r *productRepository) Delete(id string) *errors.Rest {
+	stmt, stmtErr := r.connection.Prepare(queryDeleteProduct)
+	if stmtErr != nil {
+		return errors.NewInternalServerError("database error")
+	}
+	defer stmt.Close()
+
+	_, err := stmt.Exec(id)
+	if err != nil {
+		return errors.NewInternalServerError("error when trying to delete product")
+	}
+
 	return nil
 }
 
