@@ -74,25 +74,10 @@ func (s *service) Delete(id string) *errors.Rest {
 }
 
 func (s *service) FindAll() ([]Product, *errors.Rest) {
-	return nil, nil
+	products, err := s.repository.FindAll()
+	if err != nil {
+		return nil, err
+	}
+
+	return products, nil
 }
-//
-//func (s *service) Search(id string) (*Account, *errors.Rest) {
-//	account, err := s.repository.Find(id)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return account, nil
-//}
-//
-//func (s *service) Delete(id string) *errors.Rest {
-//	_, err := s.Search(id)
-//	if err != nil {
-//		return err
-//	}
-//
-//	if err := s.repository.Delete(id); err != nil {
-//		return err
-//	}
-//	return nil
-//}

@@ -86,5 +86,26 @@ func (r *productRepository) Delete(id string) *errors.Rest {
 }
 
 func (r *productRepository) FindAll() ([]product.Product, *errors.Rest) {
-	return nil, nil
+	stmt, stmtErr := r.connection.Prepare(queryFindAllProducts)
+	if stmtErr != nil {
+		return nil, errors.NewInternalServerError("database error")
+	}
+	defer stmt.Close()
+
+	rows, queryErr := stmt.Query()
+	if queryErr != nil {
+		return nil, errors.NewInternalServerError("database error")
+	}
+
+	products := make([]product.Product, 0)
+	for rows.Next() {
+		var p product.Product
+		scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.SellerId, &p.CreatedOn, &p.UpdatedOn)
+		if scanErr != nil {
+			return nil, errors.NewNotFoundError(fmt.Sprintf("failed to scan row"))
+		}
+		products = append(products, p)
+	}
+
+	return products, nil
 }
