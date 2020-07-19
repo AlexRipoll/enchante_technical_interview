@@ -18,6 +18,7 @@ func Handler() {
 	productHandler := product.NewHandler(product.NewService(productRepository))
 
 	auth := router.Group("/", middleware.Authenticate())
+	authSeller := router.Group("/", middleware.AuthenticateAndCheckRole("seller"))
 
 	auth.POST("/admin/users", userHandler.RegisterUser)
 	auth.DELETE("/admin/users/:id", userHandler.Delete)
@@ -26,11 +27,11 @@ func Handler() {
 	router.POST("/users", userHandler.Register)
 	router.GET("/users/:id", userHandler.Search)
 
-	auth.POST("/users/:id/products", productHandler.Add)
-	auth.GET("/users/:id/products/:product_id", productHandler.Search)
-	auth.PUT("/users/:id/products/:product_id", productHandler.Update)
-	auth.DELETE("/users/:id/products/:product_id", productHandler.Delete)
-	auth.GET("/users/:id/products", productHandler.SearchAll)
+	authSeller.POST("/users/:id/products", productHandler.Add)
+	authSeller.GET("/users/:id/products/:product_id", productHandler.Search)
+	authSeller.PUT("/users/:id/products/:product_id", productHandler.Update)
+	authSeller.DELETE("/users/:id/products/:product_id", productHandler.Delete)
+	authSeller.GET("/users/:id/products", productHandler.SearchAll)
 
 	if err := router.Run(":9000"); err != nil {
 		panic(err)

@@ -12,7 +12,7 @@ const (
 	querySaveProduct     = "INSERT INTO products (id, name, price, seller_id, created_on, updated_on) VALUES (?, ?, ?, ?, ?, ?);"
 	queryUpdateProduct   = "UPDATE products SET name=?, price=?, updated_on=? WHERE id=?;"
 	queryDeleteProduct   = "DELETE FROM products WHERE id=?;"
-	queryFindAllProducts = "SELECT id, name, price, seller_id, created_on, updated_on FROM products;"
+	queryFindAllProducts = "SELECT id, name, price, created_on, updated_on FROM products WHERE seller_id=?;"
 )
 
 type productRepository struct {
@@ -85,14 +85,14 @@ func (r *productRepository) Delete(id string) *errors.Rest {
 	return nil
 }
 
-func (r *productRepository) FindAll() ([]product.Product, *errors.Rest) {
+func (r *productRepository) FindAll(id string) ([]product.Product, *errors.Rest) {
 	stmt, stmtErr := r.connection.Prepare(queryFindAllProducts)
 	if stmtErr != nil {
 		return nil, errors.NewInternalServerError("database error")
 	}
 	defer stmt.Close()
 
-	rows, queryErr := stmt.Query()
+	rows, queryErr := stmt.Query(id)
 	if queryErr != nil {
 		return nil, errors.NewInternalServerError("database error")
 	}
@@ -100,7 +100,7 @@ func (r *productRepository) FindAll() ([]product.Product, *errors.Rest) {
 	products := make([]product.Product, 0)
 	for rows.Next() {
 		var p product.Product
-		scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.SellerId, &p.CreatedOn, &p.UpdatedOn)
+		scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.CreatedOn, &p.UpdatedOn, &p.SellerId)
 		if scanErr != nil {
 			return nil, errors.NewNotFoundError(fmt.Sprintf("failed to scan row"))
 		}

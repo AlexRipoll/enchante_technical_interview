@@ -73,11 +73,10 @@ func (s *service) Delete(id string) *errors.Rest {
 	return nil
 }
 
-func (s *service) FindAll() ([]Product, *errors.Rest) {
-	products, err := s.repository.FindAll()
+func (s *service) FindAll(id string) ([]Product, *errors.Rest) {
+	products, err := s.repository.FindAll(id)
 	if err != nil {
 		return nil, err
 	}
-
 	return products, nil
 }

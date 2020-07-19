@@ -25,7 +25,6 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handler) Search(c *gin.Context) {
-	h.checkAccessRights(c)
 	id := strings.TrimSpace(c.Param("product_id"))
 	if err := uuidv4.NewService().Validate(id); err != nil {
 		apiErr := errors.NewBadRequestError(err.Error())
@@ -42,7 +41,6 @@ func (h *handler) Search(c *gin.Context) {
 }
 
 func (h *handler) Add(c *gin.Context) {
-	h.checkAccessRights(c)
 	sellerId := strings.TrimSpace(c.Param("id"))
 	var p Product
 	if err := c.ShouldBindJSON(&p); err != nil {
@@ -58,7 +56,6 @@ func (h *handler) Add(c *gin.Context) {
 }
 
 func (h *handler) Update(c *gin.Context) {
-	h.checkAccessRights(c)
 	id := strings.TrimSpace(c.Param("product_id"))
 	if err := uuidv4.NewService().Validate(id); err != nil {
 		apiErr := errors.NewBadRequestError(err.Error())
@@ -87,7 +84,6 @@ func (h *handler) Update(c *gin.Context) {
 }
 
 func (h *handler) Delete(c *gin.Context) {
-	h.checkAccessRights(c)
 	id := strings.TrimSpace(c.Param("product_id"))
 	if err := uuidv4.NewService().Validate(id); err != nil {
 		apiErr := errors.NewBadRequestError(err.Error())
@@ -103,43 +99,11 @@ func (h *handler) Delete(c *gin.Context) {
 }
 
 func (h *handler) SearchAll(c *gin.Context) {
-	h.checkAccessRights(c)
-	products, err := h.service.FindAll()
+	id := strings.TrimSpace(c.Param("id"))
+	products, err := h.service.FindAll(id)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return
 	}
 	c.JSON(http.StatusOK, products)
 }
-
-func (h *handler) checkAccessRights(c *gin.Context) {
-	id, ok := c.Get("id")
-	if !ok {
-		apiErr := errors.NewUnauthorizedError("missing claim")
-		c.JSON(apiErr.Status, apiErr)
-		c.Abort()
-		return
-	}
-	sellerId := strings.TrimSpace(c.Param("id"))
-	if id != sellerId {
-		apiErr := errors.NewForbiddenAccessError("forbidden access")
-		c.JSON(apiErr.Status, apiErr)
-		c.Abort()
-		return
-	}
-
-	role, ok := c.Get("role")
-	if !ok {
-		apiErr := errors.NewUnauthorizedError("missing role claim")
-		c.JSON(apiErr.Status, apiErr)
-		c.Abort()
-		return
-	}
-	if role != "seller" {
-		apiErr := errors.NewForbiddenAccessError("forbidden access")
-		c.JSON(apiErr.Status, apiErr)
-		c.Abort()
-		return
-	}
-}
-

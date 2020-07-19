@@ -26,7 +26,7 @@ type Service interface {
 	Add(name string, price float64,  sellerId string) *errors.Rest
 	Update(id string, name string, price float64,  sellerId string) *errors.Rest
 	Delete(id string) *errors.Rest
-	FindAll() ([]Product, *errors.Rest)
+	FindAll(id string) ([]Product, *errors.Rest)
 }
 
 type Repository interface {
@@ -34,7 +34,7 @@ type Repository interface {
 	Save(product *Product) *errors.Rest
 	Update(product *Product) *errors.Rest
 	Delete(id string) *errors.Rest
-	FindAll() ([]Product, *errors.Rest)
+	FindAll(id string) ([]Product, *errors.Rest)
 }
 
 func New(id string, name string, price float64, sellerId string) (*Product, *errors.Rest) {
