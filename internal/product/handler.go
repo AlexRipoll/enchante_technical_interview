@@ -57,6 +57,32 @@ func (h *handler) Add(c *gin.Context) {
 }
 
 func (h *handler) Update(c *gin.Context) {
+	h.checkAccessRights(c)
+	id := strings.TrimSpace(c.Param("product_id"))
+	if err := uuidv4.NewService().Validate(id); err != nil {
+		apiErr := errors.NewBadRequestError(err.Error())
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+	sellerId := strings.TrimSpace(c.Param("id"))
+	if err := uuidv4.NewService().Validate(id); err != nil {
+		apiErr := errors.NewBadRequestError(err.Error())
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	var p Product
+	if err := c.ShouldBindJSON(&p); err != nil {
+		apiErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	if err := h.service.Update(id, p.Name, p.Price, sellerId); err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{"status": "updated"})
 }
 
 func (h *handler) Delete(c *gin.Context) {

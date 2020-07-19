@@ -10,6 +10,7 @@ import (
 const (
 	queryFindProductById = "SELECT id, name, price, seller_id, created_on, updated_on FROM products WHERE id=?;"
 	querySaveProduct     = "INSERT INTO products (id, name, price, seller_id, created_on, updated_on) VALUES (?, ?, ?, ?, ?, ?);"
+	queryUpdateProduct   = "UPDATE products SET name=?, price=?, updated_on=? WHERE id=?;"
 	queryDeleteProduct   = "DELETE FROM products WHERE id=?;"
 	queryFindAllProducts = "SELECT id, name, price, seller_id, created_on, updated_on FROM products;"
 )
@@ -31,7 +32,7 @@ func (r *productRepository) Find(id string) (*product.Product, *errors.Rest) {
 
 	row := stmt.QueryRow(id)
 	var p product.Product
-	scanErr := row.Scan(&p.Id, &p.Name, &p.Price, &p.SellerId, &p.CreatedOn, &p.UpdatedOn )
+	scanErr := row.Scan(&p.Id, &p.Name, &p.Price, &p.SellerId, &p.CreatedOn, &p.UpdatedOn)
 	if scanErr != nil {
 		return nil, errors.NewNotFoundError(fmt.Sprintf("no product found with id %s", id))
 	}
@@ -55,7 +56,17 @@ func (r *productRepository) Save(p *product.Product) *errors.Rest {
 	return nil
 }
 
-func (r *productRepository) Update(product *product.Product) *errors.Rest {
+func (r *productRepository) Update(p *product.Product) *errors.Rest {
+	stmt, stmtErr := r.connection.Prepare(queryUpdateProduct)
+	if stmtErr != nil {
+		return errors.NewInternalServerError("database error")
+	}
+	defer stmt.Close()
+
+	_, err := stmt.Exec(p.Name, p.Price, p.UpdatedOn, p.Id)
+	if err != nil {
+		return errors.NewInternalServerError("error when trying to update product")
+	}
 	return nil
 }
 

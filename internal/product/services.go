@@ -43,7 +43,21 @@ func (s *service) Find(id string) (*Product, *errors.Rest) {
 	return p, nil
 }
 
-func (s *service) Update(id string, name string, price string,  sellerId string) *errors.Rest {
+func (s *service) Update(id string, name string, price float64,  sellerId string) *errors.Rest {
+	_, err := s.Find(id)
+	if err != nil {
+		return err
+	}
+
+	p, err := New(id, name, price, sellerId)
+	if err != nil {
+		return err
+	}
+	p.UpdatedOn = time.Current()
+
+	if err = s.repository.Update(p); err != nil {
+		return err
+	}
 	return nil
 }
 
