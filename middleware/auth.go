@@ -25,7 +25,9 @@ func Authenticate() gin.HandlerFunc {
 
 		claims := jwtService.Claims()
 		userId := claims["id"].(string)
+		userRole := claims["role"].(string)
 		c.Set("id", userId)
+		c.Set("role", userRole)
 		c.Next()
 	}
 }

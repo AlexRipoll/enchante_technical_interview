@@ -2,6 +2,7 @@ package rest
 
 import (
 	mysqlConfig "github.com/AlexRipoll/enchante_technical_interview/config/mysql"
+	"github.com/AlexRipoll/enchante_technical_interview/internal/product"
 	"github.com/AlexRipoll/enchante_technical_interview/internal/storage/mysql"
 	"github.com/AlexRipoll/enchante_technical_interview/internal/user"
 	"github.com/AlexRipoll/enchante_technical_interview/middleware"
@@ -11,8 +12,10 @@ import (
 func Handler() {
 	router := gin.Default()
 
-	userRepository := mysql.Repository(mysqlConfig.Session())
+	userRepository := mysql.UserRepository(mysqlConfig.Session())
 	userHandler := user.NewHandler(user.NewService(userRepository))
+	productRepository := mysql.ProductRepository(mysqlConfig.Session())
+	productHandler := product.NewHandler(product.NewService(productRepository))
 
 	auth := router.Group("/", middleware.Authenticate())
 
@@ -23,7 +26,7 @@ func Handler() {
 	router.POST("/users", userHandler.Register)
 	router.GET("/users/:id", userHandler.Search)
 
-
+	auth.POST("/users/:seller_id/products", productHandler.Add)
 
 	if err := router.Run(":9000"); err != nil {
 		panic(err)

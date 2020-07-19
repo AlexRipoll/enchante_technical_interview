@@ -8,23 +8,22 @@ import (
 )
 
 const (
-	queryFindById    = "SELECT id, username, email, password, role FROM users WHERE id=?;"
-	querySave        = "INSERT INTO users (id, username, email, password, role, created_on) VALUES (?, ?, ?, ?, ?, ?);"
-	queryDelete      = "DELETE FROM users WHERE id=?;"
-	queryFindAll     = "SELECT id, username, email, password, role, created_on FROM users;"
-	queryFindByEmail = "SELECT id, username, email, password FROM users WHERE email=?;"
+	queryFindUserById    = "SELECT id, username, email, password, role FROM users WHERE id=?;"
+	querySaveUser        = "INSERT INTO users (id, username, email, password, role, created_on) VALUES (?, ?, ?, ?, ?, ?);"
+	queryDeleteUser      = "DELETE FROM users WHERE id=?;"
+	queryFindUserByEmail = "SELECT id, username, email, password, role FROM users WHERE email=?;"
 )
 
-type repository struct {
+type userRepository struct {
 	connection *sql.DB
 }
 
-func Repository(connection *sql.DB) user.Repository {
-	return &repository{connection}
+func UserRepository(connection *sql.DB) user.Repository {
+	return &userRepository{connection}
 }
 
-func (r *repository) Find(id string) (*user.Account, *errors.Rest) {
-	stmt, stmtErr := r.connection.Prepare(queryFindById)
+func (r *userRepository) Find(id string) (*user.Account, *errors.Rest) {
+	stmt, stmtErr := r.connection.Prepare(queryFindUserById)
 	if stmtErr != nil {
 		return nil, errors.NewInternalServerError("database error")
 	}
@@ -39,8 +38,8 @@ func (r *repository) Find(id string) (*user.Account, *errors.Rest) {
 	return &a, nil
 }
 
-func (r *repository) Save(account *user.Account) *errors.Rest {
-	stmt, stmtErr := r.connection.Prepare(querySave)
+func (r *userRepository) Save(account *user.Account) *errors.Rest {
+	stmt, stmtErr := r.connection.Prepare(querySaveUser)
 	if stmtErr != nil {
 		return errors.NewInternalServerError("database error")
 	}
@@ -56,8 +55,8 @@ func (r *repository) Save(account *user.Account) *errors.Rest {
 	return nil
 }
 
-func (r *repository) Delete(id string) *errors.Rest {
-	stmt, stmtErr := r.connection.Prepare(queryDelete)
+func (r *userRepository) Delete(id string) *errors.Rest {
+	stmt, stmtErr := r.connection.Prepare(queryDeleteUser)
 	if stmtErr != nil {
 		return errors.NewInternalServerError("database error")
 	}
@@ -71,8 +70,8 @@ func (r *repository) Delete(id string) *errors.Rest {
 	return nil
 }
 
-func (r *repository) FindByEmail(email string) (*user.Account, *errors.Rest) {
-	stmt, stmtErr := r.connection.Prepare(queryFindByEmail)
+func (r *userRepository) FindByEmail(email string) (*user.Account, *errors.Rest) {
+	stmt, stmtErr := r.connection.Prepare(queryFindUserByEmail)
 	if stmtErr != nil {
 		return nil, errors.NewInternalServerError("database error")
 	}
@@ -80,7 +79,7 @@ func (r *repository) FindByEmail(email string) (*user.Account, *errors.Rest) {
 
 	row := stmt.QueryRow(email)
 	var a user.Account
-	scanErr := row.Scan(&a.Id, &a.Username, &a.Email, &a.Password)
+	scanErr := row.Scan(&a.Id, &a.Username, &a.Email, &a.Password, &a.Role)
 	if scanErr != nil {
 		return nil, errors.NewNotFoundError("no account found for the given email")
 	}

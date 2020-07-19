@@ -11,4 +11,16 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL,
     role VARCHAR(255) NOT NULL,
     created_on VARCHAR(255) NOT NULL
-)
+);
+
+DROP TABLE IF EXISTS products;
+
+CREATE TABLE IF NOT EXISTS products (
+    id CHAR(36) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(13,2) NOT NULL,
+    seller_id CHAR(36) NOT NULL,
+    created_on VARCHAR(255) NOT NULL,
+    updated_on VARCHAR(255) NOT NULL DEFAULT "",
+    FOREIGN KEY (seller_id) REFERENCES users (id) ON DELETE CASCADE
+);

@@ -7,7 +7,7 @@ import (
 )
 
 type Service interface {
-	GenerateToken(id string) (string, error)
+	GenerateToken(id string, role string) (string, error)
 	ValidateToken(tokenString string) error
 	Claims() map[string]interface{}
 }
@@ -23,11 +23,12 @@ func NewService(key string, ttl int64) Service {
 
 var tokenClaims map[string]interface{}
 
-func (s *service) GenerateToken(id string) (string, error) {
+func (s *service) GenerateToken(id string, role string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = id
+	claims["role"] = role
 	claims["exp"] = time.Now().Add(time.Second * time.Duration(s.ttl)).Unix()
 
 	return token.SignedString([]byte(s.key))

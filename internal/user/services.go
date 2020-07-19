@@ -57,7 +57,7 @@ func (s *service) Login(email, password string) (string, *errors.Rest) {
 		return "", errors.NewNotFoundError("no user found with the given credentials")
 	}
 
-	token, tokenErr := jwt.NewService("secret-Key", 3600).GenerateToken(account.Id)
+	token, tokenErr := jwt.NewService("secret-Key", 3600).GenerateToken(account.Id, account.Role)
 	if tokenErr != nil {
 		return "", errors.NewInternalServerError("something went wrong")
 	}
