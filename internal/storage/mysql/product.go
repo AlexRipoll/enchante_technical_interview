@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/AlexRipoll/enchante_technical_interview/internal/product"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
 )
@@ -22,7 +23,19 @@ func ProductRepository(connection *sql.DB) product.Repository {
 }
 
 func (r *productRepository) Find(id string) (*product.Product, *errors.Rest) {
-	return nil, nil
+	stmt, stmtErr := r.connection.Prepare(queryFindProductById)
+	if stmtErr != nil {
+		return nil, errors.NewInternalServerError("database error")
+	}
+	defer stmt.Close()
+
+	row := stmt.QueryRow(id)
+	var p product.Product
+	scanErr := row.Scan(&p.Id, &p.Name, &p.Price, &p.SellerId, &p.CreatedOn, &p.UpdatedOn )
+	if scanErr != nil {
+		return nil, errors.NewNotFoundError(fmt.Sprintf("no product found with id %s", id))
+	}
+	return &p, nil
 }
 
 func (r *productRepository) Save(p *product.Product) *errors.Rest {

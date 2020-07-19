@@ -36,7 +36,11 @@ func (s *service) Add(name string, price float64, sellerId string) *errors.Rest 
 	return nil
 }
 func (s *service) Find(id string) (*Product, *errors.Rest) {
-	return nil, nil
+	p, err := s.repository.Find(id)
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 func (s *service) Update(id string, name string, price string,  sellerId string) *errors.Rest {

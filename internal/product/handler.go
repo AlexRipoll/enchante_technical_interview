@@ -2,6 +2,7 @@ package product
 
 import (
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
+	"github.com/AlexRipoll/enchante_technical_interview/pkg/uuidv4"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -23,11 +24,25 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handler) Search(c *gin.Context) {
+	h.checkAccessRights(c)
+	id := strings.TrimSpace(c.Param("product_id"))
+	if err := uuidv4.NewService().Validate(id); err != nil {
+		apiErr := errors.NewBadRequestError(err.Error())
+		c.JSON(apiErr.Status, apiErr)
+		return
+	}
+
+	p, serviceErr := h.service.Find(id)
+	if serviceErr != nil {
+		c.JSON(serviceErr.Status, serviceErr)
+		return
+	}
+	c.JSON(http.StatusOK, p)
 }
 
 func (h *handler) Add(c *gin.Context) {
 	h.checkAccessRights(c)
-	sellerId := strings.TrimSpace(c.Param("seller_id"))
+	sellerId := strings.TrimSpace(c.Param("id"))
 	var p Product
 	if err := c.ShouldBindJSON(&p); err != nil {
 		apiErr := errors.NewBadRequestError("invalid json body")
@@ -52,12 +67,14 @@ func (h *handler) checkAccessRights(c *gin.Context) {
 	if !ok {
 		apiErr := errors.NewUnauthorizedError("missing claim")
 		c.JSON(apiErr.Status, apiErr)
+		c.Abort()
 		return
 	}
-	sellerId := strings.TrimSpace(c.Param("seller_id"))
+	sellerId := strings.TrimSpace(c.Param("id"))
 	if id != sellerId {
 		apiErr := errors.NewForbiddenAccessError("forbidden access")
 		c.JSON(apiErr.Status, apiErr)
+		c.Abort()
 		return
 	}
 
@@ -65,11 +82,13 @@ func (h *handler) checkAccessRights(c *gin.Context) {
 	if !ok {
 		apiErr := errors.NewUnauthorizedError("missing role claim")
 		c.JSON(apiErr.Status, apiErr)
+		c.Abort()
 		return
 	}
 	if role != "seller" {
 		apiErr := errors.NewForbiddenAccessError("forbidden access")
 		c.JSON(apiErr.Status, apiErr)
+		c.Abort()
 		return
 	}
 }

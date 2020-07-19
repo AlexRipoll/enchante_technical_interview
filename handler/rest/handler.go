@@ -26,7 +26,8 @@ func Handler() {
 	router.POST("/users", userHandler.Register)
 	router.GET("/users/:id", userHandler.Search)
 
-	auth.POST("/users/:seller_id/products", productHandler.Add)
+	auth.POST("/users/:id/products", productHandler.Add)
+	auth.GET("/users/:id/products/:product_id", productHandler.Search)
 
 	if err := router.Run(":9000"); err != nil {
 		panic(err)
