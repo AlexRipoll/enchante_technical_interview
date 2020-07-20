@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS orders (
     seller_id CHAR(36) NOT NULL,
     price DECIMAL(13,2) NOT NULL,
     quantity TINYINT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products (id),
     FOREIGN KEY (seller_id) REFERENCES users (id)
 );
@@ -50,7 +50,7 @@ INSERT INTO
         "john.Doe@gmail.com",
         "$2y$10$UZemHdSweFA8Y9h26Ftc6eGVaCJ0gBoKHjO41Vy1oTuIDAsRNubvi",
         "user",
-        ""
+        "2020-07-20T14:10:32Z"
     ),
      (
         "7d695ec2-8979-4c90-8758-9f57badf5cf4",
@@ -58,7 +58,15 @@ INSERT INTO
         "seller@gmail.com",
         "$2y$10$UZemHdSweFA8Y9h26Ftc6eGVaCJ0gBoKHjO41Vy1oTuIDAsRNubvi",
         "seller",
-        ""
+        "2020-07-20T14:10:32Z"
+    ),
+     (
+        "240ec9a2-e255-4527-a890-235f965e9fa4",
+        "admin",
+        "admin@gmail.com",
+        "$2y$10$UZemHdSweFA8Y9h26Ftc6eGVaCJ0gBoKHjO41Vy1oTuIDAsRNubvi",
+        "admin",
+        "2020-07-20T14:10:32Z"
     )
 ;
 
@@ -70,7 +78,7 @@ INSERT INTO
      "PS5",
      599.99,
      "7d695ec2-8979-4c90-8758-9f57badf5cf4",
-     "",
+     "2020-07-20T14:10:32Z",
      ""
      ),
     (
@@ -78,7 +86,7 @@ INSERT INTO
      "PC",
      1702.00,
      "7d695ec2-8979-4c90-8758-9f57badf5cf4",
-     "",
+     "2020-07-20T14:10:32Z",
      ""
      )
 ;
