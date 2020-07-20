@@ -32,7 +32,9 @@ Host:
     
 Postman Doc:
     
-    https://explore.postman.com/4DNpR32nDDWP3Y
-    
-    https://www.getpostman.com/collections/f37cccd389730c6cf513
-    
+    https://explore.postman.com/4DNpR32nDDWP3Y  (-> View Documentation)
+        
+
+##### Note:
+
+Env variables are declared in config.yaml file.
