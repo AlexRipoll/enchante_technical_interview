@@ -32,7 +32,7 @@ func Handler() {
 	// admin only access endpoints
 	authAdmin.POST("/admin/users", userHandler.RegisterUser)
 	authAdmin.DELETE("/admin/users/:id", userHandler.Delete)
-	authAdmin.GET("/users/:id", userHandler.Search)
+	authAdmin.GET("/admin/users/:id", userHandler.Search)
 
 	// seller only access endpoints
 	authSeller.POST("/users/:id/products", productHandler.Add)

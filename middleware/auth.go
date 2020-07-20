@@ -57,19 +57,22 @@ func AuthenticateAndCheckRole(role string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		sellerId := strings.TrimSpace(c.Param("id"))
-		if userId != sellerId {
-			err := errors.NewForbiddenAccessError("forbidden access")
-			c.JSON(err.Status, err)
-			c.Abort()
-			return
-		}
 
 		if role != userRole {
 			apiErr := errors.NewForbiddenAccessError("forbidden access")
 			c.JSON(apiErr.Status, apiErr)
 			c.Abort()
 			return
+		}
+
+		id := strings.TrimSpace(c.Param("id"))
+		if role == "seller" && id != "" {
+			if userId != id {
+				err := errors.NewForbiddenAccessError("forbidden access")
+				c.JSON(err.Status, err)
+				c.Abort()
+				return
+			}
 		}
 	}
 }

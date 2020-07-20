@@ -46,7 +46,7 @@ func (r *productRepository) Save(p *product.Product) *errors.Rest {
 	}
 	defer stmt.Close()
 
-	result, err := stmt.Exec(p.Id, p.Name, p.Price, p.SellerId, p.CreatedOn, p.CreatedOn)
+	result, err := stmt.Exec(p.Id, p.Name, p.Price, p.SellerId, p.CreatedOn, p.UpdatedOn)
 	if err != nil {
 		return errors.NewInternalServerError("error when trying to insert product")
 	}
@@ -100,9 +100,9 @@ func (r *productRepository) FindAll(id string) ([]product.Product, *errors.Rest)
 	products := make([]product.Product, 0)
 	for rows.Next() {
 		var p product.Product
-		scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.CreatedOn, &p.UpdatedOn, &p.SellerId)
+		scanErr := rows.Scan(&p.Id, &p.Name, &p.Price, &p.CreatedOn, &p.UpdatedOn)
 		if scanErr != nil {
-			return nil, errors.NewNotFoundError(fmt.Sprintf("failed to scan row"))
+			return nil, errors.NewNotFoundError("failed to scan row")
 		}
 		products = append(products, p)
 	}

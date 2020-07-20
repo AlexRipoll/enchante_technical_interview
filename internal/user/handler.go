@@ -56,7 +56,6 @@ func (h *handler) Login(c *gin.Context) {
 }
 
 func (h *handler) RegisterUser(c *gin.Context) {
-	h.checkAccessRights(c)
 	var a Account
 	if err := c.ShouldBindJSON(&a); err != nil {
 		apiErr := errors.NewBadRequestError("invalid json body")
@@ -94,29 +93,9 @@ func (h *handler) Delete(c *gin.Context) {
 		return
 	}
 
-	h.checkAccessRights(c)
 	if serviceErr := h.service.Delete(id); serviceErr != nil {
 		c.JSON(serviceErr.Status, serviceErr)
 		return
 	}
 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
-}
-
-func (h *handler) checkAccessRights(c *gin.Context) {
-	id, ok := c.Get("id")
-	if !ok {
-		apiErr := errors.NewUnauthorizedError("missing claim")
-		c.JSON(apiErr.Status, apiErr)
-		return
-	}
-	account, err := h.service.Search(id.(string))
-	if err != nil {
-		c.JSON(err.Status, err)
-		return
-	}
-	if account.Role != "admin" {
-		apiErr := errors.NewForbiddenAccessError("forbidden access")
-		c.JSON(apiErr.Status, apiErr)
-		return
-	}
 }
