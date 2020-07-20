@@ -3,6 +3,7 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
+	"github.com/AlexRipoll/enchante_technical_interview/config"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -11,8 +12,14 @@ var(
 )
 
 func InitSession() {
-	dbConnection, err := sql.Open("mysql", "root:root@tcp(db:3306)/enchainte_db")
-
+	dbConnection, err := sql.Open("mysql", fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s",
+		config.Params.Database.User,
+		config.Params.Database.Password,
+		config.Params.Database.Host,
+		config.Params.Database.Port,
+		config.Params.Database.Name,
+	))
 	if err != nil {
 		panic(err)
 	}

@@ -1,6 +1,8 @@
 package rest
 
 import (
+	"fmt"
+	"github.com/AlexRipoll/enchante_technical_interview/config"
 	mysqlConfig "github.com/AlexRipoll/enchante_technical_interview/config/mysql"
 	"github.com/AlexRipoll/enchante_technical_interview/internal/cart"
 	"github.com/AlexRipoll/enchante_technical_interview/internal/product"
@@ -42,7 +44,7 @@ func Handler() {
 	// user only access endpoints
 	authUser.POST("/users/:id/orders", cartHandler.Purchase)
 
-	if err := router.Run(":9000"); err != nil {
+	if err := router.Run(fmt.Sprintf(":%d", config.Params.Server.Port)); err != nil {
 		panic(err)
 	}
 }

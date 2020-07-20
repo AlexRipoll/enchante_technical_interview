@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/AlexRipoll/enchante_technical_interview/config"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/errors"
 	"github.com/AlexRipoll/enchante_technical_interview/pkg/jwt"
 	"github.com/gin-gonic/gin"
@@ -14,7 +15,7 @@ func Authenticate() gin.HandlerFunc {
 		t := c.Request.Header.Get("Authorization")
 		t = strings.TrimSpace(strings.Replace(t, "Bearer", "", -1))
 
-		jwtService := jwt.NewService("secret-Key", 3600)
+		jwtService := jwt.NewService(config.Params.Jwt.Key, config.Params.Jwt.Ttl)
 
 		if err := jwtService.ValidateToken(t); err != nil {
 			tErr := errors.NewError(http.StatusUnauthorized, "not authorized")
@@ -38,7 +39,7 @@ func AuthenticateAndCheckRole(role string) gin.HandlerFunc {
 		t := c.Request.Header.Get("Authorization")
 		t = strings.TrimSpace(strings.Replace(t, "Bearer", "", -1))
 
-		jwtService := jwt.NewService("secret-Key", 3600)
+		jwtService := jwt.NewService(config.Params.Jwt.Key, config.Params.Jwt.Ttl)
 
 		if err := jwtService.ValidateToken(t); err != nil {
 			tErr := errors.NewError(http.StatusUnauthorized, "not authorized")
