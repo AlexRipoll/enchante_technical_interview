@@ -20,9 +20,6 @@
 
     `docker exec -i $(docker-compose ps -q db) mysql -u root -proot enchainte_db < config/mysql/database.sql`
     
-3. stop and delete environment
-
-    `make down`
     
 And that's it!
 
